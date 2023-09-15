@@ -33,3 +33,5 @@ All test have `0.01` absolute tolerance for each element of resulting matrix.
 
 ## Submitting
 When you are ready with task 1 or task 2: fork this repo, push your code and send the link to us.
+
+Kosterov
