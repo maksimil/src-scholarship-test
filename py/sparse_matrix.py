@@ -59,7 +59,24 @@ class SparseMatrix:
     def __matmul__(self, other):
 
         # vvvvv your code here vvvvv
-        result = SparseMatrix(dense=self.to_dense() @ other.to_dense())
+        n = len(self.data_)
+
+        result = SparseMatrix()
+        result.data_ = []
+
+        for i in range(n):
+            result.data_.append([])
+            for j in range(n):
+                cij = 0
+                for element in self.data_[i]:
+                    k = element.index
+                    aik = element.value
+                    akj = bin_find(other.data_[k], j)
+                    cij += aik*akj
+                if cij != 0:
+                    result.data_[i].append(Element(j,cij))
+
+        #  result = SparseMatrix(dense=self.to_dense() @ other.to_dense())
         # ^^^^^ your code here ^^^^^
 
         return result
@@ -67,7 +84,31 @@ class SparseMatrix:
     def __pow__(self, power, modulo=None):
 
         # vvvvv your code here vvvvv
-        result = SparseMatrix(dense=np.linalg.matrix_power(self.to_dense(), power))
+        if power == 1:
+            result = self
+        else:
+            half_power = self.__pow__(power//2)
+            mid_result = half_power.__matmul__(half_power)
+
+            if power % 2 ==1:
+                result = mid_result.__matmul__(self)
+            else:
+                result = mid_result
+
+        #  result = SparseMatrix(dense=np.linalg.matrix_power(self.to_dense(), power))
         # ^^^^^ your code here ^^^^^
 
         return result
+
+def bin_find(elements, index):
+    low = 0
+    high = len(elements)-1
+    while low<=high:
+        mid = (high+low)//2
+        if elements[mid].index < index:
+            low = mid+1
+        elif elements[mid].index > index:
+            high = mid-1
+        else:
+            return elements[mid].value
+    return 0
